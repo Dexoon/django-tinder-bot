@@ -99,7 +99,8 @@ POSTGRES_PASSWORD = env('POSTGRES_PASSWORD', default='')
 DATABASE_HOST = env('DATABASE_HOST', default='db')
 POSTGRES_DB = env('POSTGRES_DB', default='django_db')
 DATABASES = {
-    'default': env.db('DATABASE', default=f"psql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{DATABASE_HOST}:5432/{POSTGRES_DB}")
+    'default': env.db('DATABASE',
+                      default=f"psql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{DATABASE_HOST}:5432/{POSTGRES_DB}")
 }
 
 # Password validation
@@ -135,10 +136,12 @@ USE_TZ = True
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "react-modules/static"),
+]
 if DEBUG:
-    STATICFILES_DIRS = [
+    STATICFILES_DIRS += [
         os.path.join(BASE_DIR, "tgbot/static"),
-        os.path.join(BASE_DIR, "react-modules/static"),
     ]
 
 # -----> CELERY
