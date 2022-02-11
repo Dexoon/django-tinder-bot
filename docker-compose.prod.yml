@@ -28,6 +28,8 @@ services:
       - 8000
     depends_on:
       - db
+    volumes:
+      - static_volume:/code/static
   celery:
     <<: *django
     command: celery -A dtb worker --loglevel=INFO
@@ -41,5 +43,9 @@ services:
       - 1337:80
     depends_on:
       - web
+    volumes:
+      - static_volume:/app/static
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
