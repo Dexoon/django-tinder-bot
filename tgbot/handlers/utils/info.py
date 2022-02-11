@@ -7,10 +7,11 @@ from telegram import Update
 
 def send_typing_action(func: Callable):
     """Sends typing action while processing func command."""
+
     @wraps(func)
     def command_func(update, context, *args, **kwargs):
         context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=telegram.ChatAction.TYPING)
-        return func(update, context,  *args, **kwargs)
+        return func(update, context, *args, **kwargs)
 
     return command_func
 
@@ -32,10 +33,28 @@ def extract_user_data_from_update(update: Update) -> Dict:
 
     return dict(
         user_id=user["id"],
+        username=user.get("username", user["id"]),
         is_blocked_bot=False,
         **{
             k: user[k]
-            for k in ["username", "first_name", "last_name", "language_code"]
+            for k in ["first_name", "last_name", "language_code"]
             if k in user and user[k] is not None
+        },
+    )
+
+
+def extract_chat_data_from_update(update: Update) -> Dict:
+    """ python-telegram-bot's Update instance --> User info """
+    if update.message is not None:
+        chat = update.message.chat.to_dict()
+    else:
+        raise Exception(f"Can't extract user data from update: {update}")
+
+    return dict(
+        chat_id=chat["id"],
+        **{
+            k: chat[k]
+            for k in ["title", 'type', 'username']
+            if k in chat and chat[k] is not None
         },
     )

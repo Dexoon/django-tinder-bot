@@ -1,11 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from dtb.settings import DEBUG
 
-from tgbot.models import Location
-from tgbot.models import User
+from tgbot.models import User, Like
 from tgbot.forms import BroadcastForm
 
 from tgbot.tasks import broadcast_message
@@ -13,9 +13,9 @@ from tgbot.handlers.broadcast_message.utils import _send_message
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(UserAdmin):
     list_display = [
-        'user_id', 'username', 'first_name', 'last_name', 
+        'user_id', 'tg_username', 'first_name', 'last_name',
         'language_code', 'deep_link',
         'created_at', 'updated_at', "is_blocked_bot",
     ]
@@ -49,6 +49,6 @@ class UserAdmin(admin.ModelAdmin):
             )
 
 
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user_id', 'created_at']
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ['from_user', 'to_user']

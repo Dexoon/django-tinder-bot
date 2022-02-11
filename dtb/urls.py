@@ -16,9 +16,14 @@ Including another URLconf
 import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from django.conf import settings
 
 urlpatterns = [
-    path('tgadmin/', admin.site.urls),
+    path('admin/', admin.site.urls),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path('', include('tgbot.urls')),
-    path('__debug__/', include(debug_toolbar.urls)),
 ]
+if settings.DEBUG:
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls))]

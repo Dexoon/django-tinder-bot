@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+        <title> {% block title %} Тиндер {% endblock %}</title>
+        {{ react_data|json_script:"react-data" }}
+        <script type="text/javascript">
+            const csrftoken = "{{ csrf_token }}";
+            window.csrftoken = csrftoken;
+            window.user_id = "{{ user.id }}";
+            window.reactData = JSON.parse(document.getElementById('react-data').textContent);
+        </script>
+    {% endblock %}
+</head>
+<body>
+{% block header %}
+    <div align="center">
+        {% if user.is_anonymous %}
+            Чтобы залогиниться, напишите боту
+        {% else %}
+            <a href="{% url 'logout' %}">Logout</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% if not user.is_anonymous %}
+    {% block content %}
+    {% endblock %}
+{% else %}
+    {% block public_content %}
+    {% endblock %}
+{% endif %}
+</body>
+</html>

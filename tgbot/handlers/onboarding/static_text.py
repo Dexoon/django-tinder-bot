@@ -1,7 +1,2 @@
-start_created = "Sup, {first_name}!"
-start_not_created = "Welcome back, {first_name}!"
-unlock_secret_room = "Congratulations! You've opened a secret room👁‍🗨. There is some information for you:\n" \
-           "<b>Users</b>: {user_count}\n" \
-           "<b>24h active</b>: {active_24}"
-github_button_text = "GitHub"
-secret_level_button_text = "Secret level🗝"
+public_start="Чтобы начать, переходите в лс к боту.\n@{bot_username}\n\nЧтобы обновить список людей в чате, кликните на\n/start@{bot_username} "
+private_start = "Переходите по ссылке, чтобы продолжить.\n\nНе пересылайте ссылку другим, иначе они смогут зайти от вашего имени\n{link}"

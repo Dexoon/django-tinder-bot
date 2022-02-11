@@ -1,0 +1,50 @@
+version: "3.8"
+
+x-django: &django
+  build: .
+  env_file:
+    - ./.env
+    - ./.env.db
+
+
+services:
+  db:
+    image: postgres:14-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+    ports:
+      - 5432
+  redis:
+    image: redis:alpine
+  web:
+    <<: *django
+    command: gunicorn django.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    depends_on:
+      - db
+  yarn:
+    image: node
+    command: bash -c "yarn --cwd /app install && yarn --cwd /app run build"
+    volumes:
+      - ./react-modules:/app
+    depends_on:
+      - web
+  celery:
+    <<: *django
+    command: celery -A dtb worker --loglevel=INFO
+    depends_on:
+      - redis
+      - web
+      - db
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - web
+volumes:
+  postgres_data:

@@ -1,7 +1,7 @@
 """
     Celery tasks. Some of them will be launched periodically from admin panel via django-celery-beat
 """
-
+import asyncio
 import time
 from typing import Union, List, Optional, Dict
 
@@ -17,12 +17,12 @@ logger = get_task_logger(__name__)
 
 @app.task(ignore_result=True)
 def broadcast_message(
-    user_ids: List[Union[str, int]],
-    text: str,
-    entities: Optional[List[Dict]] = None,
-    reply_markup: Optional[List[List[Dict]]] = None,
-    sleep_between: float = 0.4,
-    parse_mode=telegram.ParseMode.HTML,
+        user_ids: List[Union[str, int]],
+        text: str,
+        entities: Optional[List[Dict]] = None,
+        reply_markup: Optional[List[List[Dict]]] = None,
+        sleep_between: float = 0.4,
+        parse_mode=telegram.ParseMode.HTML,
 ) -> None:
     """ It's used to broadcast message to big amount of users """
     logger.info(f"Going to send message: '{text}' to {len(user_ids)} users")
@@ -46,3 +46,7 @@ def broadcast_message(
     logger.info("Broadcast finished!")
 
 
+@app.task(ignore_result=True)
+def get_chat_members(chat_id):
+    from .telethon import get_chat_members as telethon_get_chat_members
+    members = telethon_get_chat_members(chat_id=chat_id)

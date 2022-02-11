@@ -1,14 +1,16 @@
 pytz
 requests
-python-dotenv
 ipython
 
 # Django
-django
+django==4.0.2
 django-timezone-field 
 django-cors-headers
 django-debug-toolbar
+django-environ
+django-sesame
 whitenoise
+django-webpack-loader
 
 # Django 3.0 async requirements
 gunicorn
@@ -27,6 +29,9 @@ django-celery-beat
 
 # Telegram
 python-telegram-bot
+telethon
+django-extensions
+werkzeug
 
 # monitoring
 # sentry-sdk
