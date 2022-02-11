@@ -28,13 +28,6 @@ services:
       - 8000
     depends_on:
       - db
-  yarn:
-    image: node
-    command: bash -c "yarn --cwd /app install && yarn --cwd /app run build"
-    volumes:
-      - ./react-modules:/app
-    depends_on:
-      - web
   celery:
     <<: *django
     command: celery -A dtb worker --loglevel=INFO
