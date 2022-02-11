@@ -105,6 +105,8 @@ class User(AbstractUser, CreateUpdateTracker):
             return None
         except ValueError:
             return self.username
+        except TypeError:
+            return None
 
     @property
     def html_str(self) -> str:

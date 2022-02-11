@@ -33,7 +33,7 @@ def extract_user_data_from_update(update: Update) -> Dict:
 
     return dict(
         user_id=user["id"],
-        username=user.get("username", user["id"]),
+        username=user.get("username", None) or user["id"],
         is_blocked_bot=False,
         **{
             k: user[k]
