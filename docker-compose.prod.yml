@@ -3,7 +3,7 @@ version: "3.8"
 x-django: &django
   build: .
   env_file:
-    - ./.env
+    - ./.env.prod
     - ./.env.db
 
 
