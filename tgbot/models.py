@@ -145,9 +145,9 @@ class User(AbstractUser, CreateUpdateTracker):
 
 
 @receiver(post_save, sender=User)
-def notify_mutual(sender, instance, created, *args, **kwargs):
-    from .tasks import download_profile_photos
-    download_profile_photos.delay(user_id=instance.user_id)
+def download_profile_photos(sender, instance, created, *args, **kwargs):
+    from .tasks import download_profile_photos as download_profile_photos_task
+    download_profile_photos_task.delay(user_id=instance.user_id)
 
 
 class Chat(CreateUpdateTracker):
