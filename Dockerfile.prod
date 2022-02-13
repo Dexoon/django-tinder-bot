@@ -1,11 +1,6 @@
-FROM node AS react
 
-COPY react-modules /app
-WORKDIR /app
-RUN yarn install
-RUN yarn run build
 
-FROM python:3.10
+FROM python:3.10 AS PROD
 
 ENV PYTHONUNBUFFERED=1
 
@@ -16,6 +11,15 @@ COPY requirements.txt /code/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY . /code
-COPY --from=react /app/static /code/react-modules/static
+
+FROM node AS react
+
+COPY react-modules /app
+WORKDIR /app
+RUN yarn install
+RUN yarn run build
+
+FROM PROD AS PRODCOTNINUE
+COPY --from=react /app /code/react-modules
 
 ENTRYPOINT ["/code/entrypoint.prod.sh"]
