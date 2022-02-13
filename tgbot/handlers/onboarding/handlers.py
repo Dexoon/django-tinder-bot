@@ -12,6 +12,7 @@ from sesame.utils import get_query_string
 
 def private_command_start(update: Update, context: CallbackContext) -> None:
     u, created = User.get_user_and_created(update, context)
+    u.save()
 
     text = static_text.private_start.format(link=f"\nhttps://{settings.URL}/{get_query_string(u)}")
 
