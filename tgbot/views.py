@@ -34,7 +34,8 @@ def chat(request, id: str):
         if not chat in user.chats.all():
             raise Http404()
         user = request.user
-        users = chat.users.exclude(user_id=user.user_id).values('user_id', 'username', 'first_name', 'last_name')
+        users = chat.users.exclude(user_id=user.user_id).values('user_id', 'username', 'first_name', 'last_name',
+                                                                'photos')
         likes = user.crushes.all().values_list('user_id', flat=True)
         followers = user.followers.all().values_list('user_id', flat=True)
         react_data = {

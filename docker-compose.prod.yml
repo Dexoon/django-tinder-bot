@@ -7,6 +7,9 @@ x-django: &django
   env_file:
     - ./.env.prod
     - ./.env.db
+  volumes:
+    - static_volume:/code/static
+    - media_volume:/code/media
 
 
 services:
@@ -28,8 +31,6 @@ services:
       - 8000
     depends_on:
       - db
-    volumes:
-      - static_volume:/code/static
   celery:
     <<: *django
     command: celery -A dtb worker --loglevel=INFO
@@ -45,6 +46,7 @@ services:
       - web
     volumes:
       - static_volume:/app/static
+      - media_volume:/app/media
 volumes:
   postgres_data:
   static_volume:

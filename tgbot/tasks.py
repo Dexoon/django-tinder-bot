@@ -6,11 +6,14 @@ import time
 from typing import Union, List, Optional, Dict
 
 import telegram
+from django.core.files.images import ImageFile
 
 from dtb.celery import app
 from celery.utils.log import get_task_logger
-from tgbot.handlers.broadcast_message.utils import _send_message, _from_celery_entities_to_entities, \
+from .handlers.broadcast_message.utils import _send_message, _from_celery_entities_to_entities, \
     _from_celery_markup_to_markup
+from .models import User
+from .utils import download_photo_size
 
 logger = get_task_logger(__name__)
 
@@ -50,3 +53,9 @@ def broadcast_message(
 def get_chat_members(chat_id):
     from .telethon import get_chat_members as telethon_get_chat_members
     members = telethon_get_chat_members(chat_id=chat_id)
+
+
+@app.task(ignore_result=True)
+def download_profile_photos(user_id: int):
+    user = User.objects.get(user_id=user_id)
+    user.download_profile_photos()

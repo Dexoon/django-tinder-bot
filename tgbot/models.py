@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import Union, Optional, Tuple
 
+from django.core.files.images import ImageFile
 from django.db import models
 from django.db.models import QuerySet, Manager
 from django.db.models.signals import pre_save, post_save
@@ -11,6 +12,7 @@ from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 
 from dtb.settings import DEBUG
 from .handlers.utils.info import extract_user_data_from_update, extract_chat_data_from_update
@@ -29,7 +31,7 @@ class User(AbstractUser, CreateUpdateTracker):
     last_name = models.CharField(max_length=256, **nb)
     language_code = models.CharField(max_length=8, help_text="Telegram client's lang", **nb)
     deep_link = models.CharField(max_length=64, **nb)
-
+    photos = ArrayField(ArrayField(models.ImageField(**nb), size=4, default=list), default=list)
     is_blocked_bot = models.BooleanField(default=False)
 
     is_admin = models.BooleanField(default=False)
@@ -126,6 +128,27 @@ class User(AbstractUser, CreateUpdateTracker):
             like.delete()
         return True
 
+    def download_profile_photos(self):
+        from .dispatcher import bot
+        from .utils import download_photo_size
+        profile_photos = bot.get_user_profile_photos(user_id=self.user_id).photos
+        fileset = []
+        for photos_set in profile_photos:
+            images = [None] * 4
+            for i, profile_photo in enumerate(photos_set[:4]):
+                image_path = download_photo_size(profile_photo)
+                with open(image_path) as f:
+                    images[i] = ImageFile(file=f)
+            fileset += [images]
+        User.objects.filter(user_id=self.user_id).update(photos = fileset)
+
+
+
+@receiver(post_save, sender=User)
+def notify_mutual(sender, instance, created, *args, **kwargs):
+    from .tasks import download_profile_photos
+    download_profile_photos.delay(user_id=instance.user_id)
+
 
 class Chat(CreateUpdateTracker):
     chat_id = models.BigIntegerField(primary_key=True)  # telegram_id
@@ -147,11 +170,7 @@ class Chat(CreateUpdateTracker):
         """ python-telegram-bot's Update, Context --> User instance """
         data = extract_chat_data_from_update(update)
         print(data)
-        try:
-            c, created = cls.objects.update_or_create(chat_id=data["chat_id"], defaults=data)
-        except Exception as e:
-            print(e)
-        print(c, created)
+        c, created = cls.objects.update_or_create(chat_id=data["chat_id"], defaults=data)
         return c, created
 
     def __str__(self):

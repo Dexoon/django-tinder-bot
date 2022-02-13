@@ -32,6 +32,7 @@ python-telegram-bot
 telethon
 django-extensions
 werkzeug
+pillow
 
 # monitoring
 # sentry-sdk

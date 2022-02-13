@@ -25,8 +25,10 @@
   "dependencies": {
     "@babel/plugin-syntax-jsx": "^7.14.5",
     "@babel/runtime": "^7.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.17",
     "axios": "^0.21.1",
     "bootstrap": "^5.1.0",
+    "bootstrap-icons": "^1.8.1",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "formik": "^2.2.9",
     "install": "^0.13.0",

@@ -1,20 +1,20 @@
 import React, {useState} from "react";
 import ReactDOM from "react-dom";
 import Button from 'react-bootstrap/Button';
+import Image from 'react-bootstrap/Image'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import alert from "bootstrap/js/src/alert";
+import Container from 'react-bootstrap/Container'
+import Carousel from 'react-bootstrap/Carousel'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
-const get_str = (username, first_name, last_name) => {
-    let str = ' ';
-    if (isNaN(username)) {
-        str += `@${username} `
-    }
-    str += `${first_name} `;
-    if (last_name) {
-        str += last_name;
-    }
-    return str;
-}
+const UserHeader = ({username, first_name, last_name}) => <>
+    {isNaN(username) && <a href={'https://t.me/' + username}>@{username}</a>}
+    <h2>{first_name} {last_name}</h2>
+</>
+
 const set_like = (user_id, setLike, setMutual) => {
     fetch(`/like/${user_id}`)
         .then(res => res.json())
@@ -49,20 +49,43 @@ const unlike = (user_id, setLike, setMutual) => {
         )
 }
 
-const Line = ({user_id, username, first_name, last_name, initial_like, initial_mutual}) => {
+const PhotoCarousel = ({photos}) =>
+    <Carousel variant="dark" interval={null} indicators={false}>
+        {photos.map((photo) =>
+            <Carousel.Item>
+                <Image style={{display: 'block', margin: 'auto', height: '100px'}}
+                       key={photo[0]} roundedCircle src={'/' + photo[0]}/>
+            </Carousel.Item>)}
+    </Carousel>
+
+
+const Line = ({user_id, username, first_name, last_name, photos, initial_like, initial_mutual}) => {
     const [like, setLike] = useState(initial_like);
     const [mutual, setMutual] = useState(initial_mutual);
-    let variant = "danger";
-    if (!like) {
-        variant = 'outline-' + variant
+    let icon = 'heart';
+    let onclick = set_like;
+    if (like) {
+        icon = 'heart-fill';
+        onclick = unlike;
+        if (mutual) {
+            icon = 'arrow-through-heart-fill'
+        }
     }
-    return <div>
-        <Button variant={variant} onClick={() => set_like(user_id, setLike,setMutual)}>♥</Button>
-        {get_str(username, first_name, last_name)}
-        {mutual && 'Взаимно'}
-        {like && <Button variant="outline-dark" onClick={() => unlike(user_id, setLike, setMutual)}>❌</Button>}
-
-    </div>
+    return <Row>
+        <Col>
+            <Button variant="outline-danger"
+                    onClick={() => onclick(user_id, setLike, setMutual)}>
+                <i className={`bi bi-${icon}`} style={{fontSize: 50}}/>
+            </Button>
+        </Col>
+        <Col>
+            {photos.length > 0 && <PhotoCarousel photos={photos}/>}
+        </Col>
+        <Col >
+            <UserHeader {...{username, first_name, last_name}}/>
+            {mutual && 'Взаимно'}
+        </Col>
+    </Row>
 }
 
 const App = ({users, likes, mutuals}) => {

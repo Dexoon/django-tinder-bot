@@ -183,6 +183,9 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'react-modules', 'webpack-stats.json'),
     }
 }
+
+MEDIA_URL='media/'
+MEDIA_ROOT='media'
 # -----> SENTRY
 # import sentry_sdk
 # from sentry_sdk.integrations.django import DjangoIntegration
